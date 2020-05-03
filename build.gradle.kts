@@ -49,6 +49,7 @@ kotlin {
     }
   }
 
+  iosArm32().configureIosTarget()
   iosArm64().configureIosTarget()
   iosX64().configureIosTarget()
 }
@@ -87,16 +88,22 @@ tasks.withType<Wrapper> {
   distributionType = Wrapper.DistributionType.ALL
 }
 
-tasks.register<PumaDeployTask>("deployIosArm64") {
-  from(tasks.getByName("linkDebugExecutableIosArm64"))
+fun setupDeployAndExecute(systemTarget: String) {
+  tasks.register<PumaDeployTask>("deploy$systemTarget") {
+    from(tasks.getByName("linkDebugExecutable$systemTarget"))
 
-  entitlements = "resources/puma.entitlements"
-  target = "/usr/bin/puma.kexe"
-  sign = true
+    entitlements = "resources/puma.entitlements"
+    target = "/usr/bin/puma.kexe"
+    sign = true
+  }
+
+  tasks.register<PumaExecuteTask>("executeIos$systemTarget") {
+    dependsOn(tasks.getByName("deployIos$systemTarget"))
+
+    executable = "/usr/bin/puma.kexe"
+  }
+
 }
 
-tasks.register<PumaExecuteTask>("executeIosArm64") {
-  dependsOn(tasks.getByName("deployIosArm64"))
-
-  executable = "/usr/bin/puma.kexe"
-}
+setupDeployAndExecute("IosArm32")
+setupDeployAndExecute("IosArm64")

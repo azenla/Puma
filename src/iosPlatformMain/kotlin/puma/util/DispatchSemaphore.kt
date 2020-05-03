@@ -6,8 +6,8 @@ import platform.darwin.dispatch_semaphore_signal
 import platform.darwin.dispatch_semaphore_t
 import platform.darwin.dispatch_semaphore_wait
 
-class DispatchSemaphore(val value: Long = 0) {
-  private val handle: dispatch_semaphore_t = dispatch_semaphore_create(value)
+class DispatchSemaphore {
+  private val handle: dispatch_semaphore_t = dispatch_semaphore_create(0)
 
   fun signal() {
     dispatch_semaphore_signal(handle)

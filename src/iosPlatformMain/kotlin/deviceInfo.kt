@@ -1,5 +1,6 @@
 import platform.UIKit.UIDevice
 import platform.UIKit.UIDeviceBatteryState
+import kotlin.math.round
 
 fun showDeviceInfo() {
   val device = UIDevice.currentDevice
@@ -17,5 +18,11 @@ fun showDeviceInfo() {
     else -> "Unknown"
   }
   println("Battery State: $batteryStateString")
-  println("Battery Level: ${device.batteryLevel * 100.0}%")
+  println("Battery Level: ${(device.batteryLevel * 100.0).roundTo(3)}%")
+}
+
+fun Double.roundTo(decimals: Int): Double {
+  var multiplier = 1.0
+  repeat(decimals) { multiplier *= 10 }
+  return round(this * multiplier) / multiplier
 }
