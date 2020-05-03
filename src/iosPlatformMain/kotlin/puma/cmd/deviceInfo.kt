@@ -1,9 +1,9 @@
 package puma.cmd
 
+import den.services.springboard.SpringBoardServices
 import kotlin.math.round
 import platform.UIKit.UIDevice
 import platform.UIKit.UIDeviceBatteryState
-import den.services.springboard.SpringBoardServices
 
 fun showDeviceInfo() {
   val device = UIDevice.currentDevice

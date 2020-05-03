@@ -18,7 +18,7 @@ private typealias SBLaunchingErrorString = CPointer<CFunction<(Int) -> CFStringR
 private typealias SBCopyFrontmostApplicationDisplayIdentifier = CPointer<CFunction<() -> CFStringRef?>>
 private typealias SBCopyStatusBarOperatorName = CPointer<CFunction<() -> CFStringRef?>>
 
-class SpringBoardServices(handle: COpaquePointer): PrivateLibrary(handle) {
+class SpringBoardServices(handle: COpaquePointer) : PrivateLibrary(handle) {
   fun launchApplicationWithIdentifier(identifier: String, suspend: Boolean = false) {
     val function: SBLaunchApplicationWithIdentifier =
       symbol("SBSLaunchApplicationWithIdentifier")
@@ -44,7 +44,7 @@ class SpringBoardServices(handle: COpaquePointer): PrivateLibrary(handle) {
     return function().toKString()
   }
 
-  companion object: PrivateLibraryLoader<SpringBoardServices>(
+  companion object : PrivateLibraryLoader<SpringBoardServices>(
     getPrivateFrameworkServicePath("SpringBoardServices")
   ) {
     override fun create(handle: COpaquePointer): SpringBoardServices =

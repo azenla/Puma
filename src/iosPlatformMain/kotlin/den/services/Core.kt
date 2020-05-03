@@ -21,16 +21,16 @@ abstract class PrivateLibrary(val handle: COpaquePointer) {
   }
 }
 
-abstract class PrivateLibraryLoader<T: PrivateLibrary>(val path: String) {
+abstract class PrivateLibraryLoader<T : PrivateLibrary>(val path: String) {
   abstract fun create(handle: COpaquePointer): T
 
   fun open(): T = create(
-    dlopen(path, RTLD_GLOBAL) ?:
-      throw RuntimeException("Failed to load service $path")
+    dlopen(path, RTLD_GLOBAL)
+      ?: throw RuntimeException("Failed to load service $path")
   )
 }
 
-fun <T: PrivateLibrary> T.use(block: T.() -> Unit) {
+fun <T : PrivateLibrary> T.use(block: T.() -> Unit) {
   try {
     block(this)
   } finally {
@@ -39,7 +39,7 @@ fun <T: PrivateLibrary> T.use(block: T.() -> Unit) {
 }
 
 internal fun getPrivateFrameworkPath(framework: String): String =
-  "/System/Library/PrivateFrameworks/${framework}.framework"
+  "/System/Library/PrivateFrameworks/$framework.framework"
 
 internal fun getPrivateFrameworkServicePath(framework: String): String =
-  "${getPrivateFrameworkPath(framework)}/${framework}"
+  "${getPrivateFrameworkPath(framework)}/$framework"

@@ -1,5 +1,8 @@
 package puma.cmd
 
+import den.concurrent.DispatchSemaphore
+import den.core.toNSURL
+import den.network.urlsession.dataTaskWithUrl
 import help
 import kotlinx.cinterop.reinterpret
 import platform.Foundation.NSData
@@ -8,9 +11,6 @@ import platform.Foundation.NSString
 import platform.Foundation.NSURLResponse
 import platform.Foundation.NSURLSession
 import platform.Foundation.stringWithCString
-import den.concurrent.DispatchSemaphore
-import den.core.toNSURL
-import den.network.urlsession.dataTaskWithUrl
 
 fun urlSessionGet(args: List<String>) {
   if (args.size != 1) {
