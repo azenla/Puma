@@ -8,9 +8,9 @@ import platform.Foundation.NSString
 import platform.Foundation.NSURLResponse
 import platform.Foundation.NSURLSession
 import platform.Foundation.stringWithCString
-import puma.util.DispatchSemaphore
-import puma.util.dataTaskWithUrl
-import puma.util.toNSURL
+import den.concurrent.DispatchSemaphore
+import den.core.toNSURL
+import den.network.urlsession.dataTaskWithUrl
 
 fun urlSessionGet(args: List<String>) {
   if (args.size != 1) {

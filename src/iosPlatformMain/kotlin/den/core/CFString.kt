@@ -1,4 +1,4 @@
-package puma.util
+package den.core
 
 import kotlinx.cinterop.toKStringFromUtf8
 import platform.CoreFoundation.CFStringCreateWithCString

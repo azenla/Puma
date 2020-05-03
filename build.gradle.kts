@@ -1,6 +1,5 @@
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import puma.gradle.PumaDeployTask
-import puma.gradle.PumaExecuteTask
 
 plugins {
   kotlin("multiplatform") version "1.3.72"
@@ -95,12 +94,6 @@ fun setupDeployAndExecute(systemTarget: String) {
     entitlements = "resources/puma.entitlements"
     target = "/usr/bin/puma.kexe"
     sign = true
-  }
-
-  tasks.register<PumaExecuteTask>("executeIos$systemTarget") {
-    dependsOn(tasks.getByName("deployIos$systemTarget"))
-
-    executable = "/usr/bin/puma.kexe"
   }
 }
 

@@ -25,39 +25,64 @@ open class PumaDeployTask: DefaultTask() {
 
   @TaskAction
   fun deploy() {
+    logger.lifecycle("Puma Deployment: Device Host is $deviceHost")
+
+    upload(executableTask?.outputs?.files?.first()?.listFiles()?.first {
+      it.name.endsWith(".kexe")
+    }?.relativeTo(project.projectDir)?.path!!, target!!)
+
+    if (sign) {
+      var deviceEntitlementPath = ""
+
+      if (entitlements.isNotEmpty()) {
+        deviceEntitlementPath = "/tmp/puma.entitlements"
+        upload(entitlements, deviceEntitlementPath)
+      }
+
+      execute(
+        "ldid",
+        "-S$deviceEntitlementPath",
+        target!!
+      )
+    }
+  }
+
+  fun execute(vararg cmd: String) {
+    logger.lifecycle("Puma Deployment: Device Execute ${cmd.joinToString(" ")}")
+
+    project.exec { exec ->
+      exec.commandLine(
+        "ssh",
+        "-o",
+        "BatchMode=yes",
+        "-o",
+        "LogLevel=ERROR",
+        "-o",
+        "StrictHostKeyChecking=no",
+        "-o",
+        "UserKnownHostsFile=/dev/null",
+        "root@${deviceHost}",
+        *cmd
+      )
+    }
+  }
+
+  fun upload(source: String, target: String) {
+    logger.lifecycle("Puma Deployment: Device Upload $source -> $target")
     project.exec { exec ->
       exec.commandLine(
         "scp",
-        executableTask?.outputs?.files?.first()?.listFiles()?.first {
-          it.name.endsWith(".kexe")
-        }?.absolutePath,
-        "root@${deviceHost}:${target}"
+        "-o",
+        "BatchMode=yes",
+        "-o",
+        "LogLevel=ERROR",
+        "-o",
+        "StrictHostKeyChecking=no",
+        "-o",
+        "UserKnownHostsFile=/dev/null",
+        source,
+        "root@$deviceHost:$target"
       )
-    }
-
-    if (sign) {
-      var entitlementMaybePath = ""
-
-      if (entitlements.isNotEmpty()) {
-        entitlementMaybePath = "/tmp/puma.entitlements"
-        project.exec { exec ->
-          exec.commandLine(
-            "scp",
-            entitlements,
-            "root@${deviceHost}:$entitlementMaybePath"
-          )
-        }
-      }
-
-      project.exec { exec ->
-        exec.commandLine(
-          "ssh",
-          "root@${deviceHost}",
-          "ldid",
-          "-S$entitlementMaybePath",
-          target
-        )
-      }
     }
   }
 
