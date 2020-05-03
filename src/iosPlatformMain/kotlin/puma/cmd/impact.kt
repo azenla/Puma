@@ -1,7 +1,9 @@
+package puma.cmd
+
 import puma.util.ImpactFeedbackGenerator
 import puma.util.ImpactFeedbackStyle
 
-fun impact() {
+fun impactHeavy() {
   if (ImpactFeedbackGenerator.supported) {
     ImpactFeedbackGenerator(ImpactFeedbackStyle.Heavy).impact()
   } else {

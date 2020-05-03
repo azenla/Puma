@@ -1,6 +1,9 @@
+package puma.cmd
+
+import kotlin.math.round
 import platform.UIKit.UIDevice
 import platform.UIKit.UIDeviceBatteryState
-import kotlin.math.round
+import puma.util.SpringBoardServices
 
 fun showDeviceInfo() {
   val device = UIDevice.currentDevice
@@ -19,6 +22,16 @@ fun showDeviceInfo() {
   }
   println("Battery State: $batteryStateString")
   println("Battery Level: ${(device.batteryLevel * 100.0).roundTo(3)}%")
+
+  val springboard = SpringBoardServices.open()
+  try {
+    val frontmost = springboard.getFrontmostApplicationIdentifier()
+    if (frontmost != null) {
+      println("Active Application: $frontmost")
+    }
+  } finally {
+    springboard.close()
+  }
 }
 
 fun Double.roundTo(decimals: Int): Double {

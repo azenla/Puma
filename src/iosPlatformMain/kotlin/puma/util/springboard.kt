@@ -1,3 +1,5 @@
+package puma.util
+
 import kotlinx.cinterop.CFunction
 import kotlinx.cinterop.COpaquePointer
 import kotlinx.cinterop.CPointed
@@ -11,13 +13,11 @@ import platform.posix.RTLD_GLOBAL
 import platform.posix.dlclose
 import platform.posix.dlopen
 import platform.posix.dlsym
-import puma.util.asCFStringRef
-import puma.util.toKString
 
 private typealias SBLaunchApplicationWithIdentifier = CPointer<CFunction<(CFStringRef, Int) -> Int>>
 private typealias SBLaunchingErrorString = CPointer<CFunction<(Int) -> CFStringRef>>
-private typealias SBCopyFrontmostApplicationDisplayIdentifier = CPointer<CFunction<() -> CFStringRef>>
-private typealias SBCopyStatusBarOperatorName = CPointer<CFunction<() -> CFStringRef>>
+private typealias SBCopyFrontmostApplicationDisplayIdentifier = CPointer<CFunction<() -> CFStringRef?>>
+private typealias SBCopyStatusBarOperatorName = CPointer<CFunction<() -> CFStringRef?>>
 
 class SpringBoardServices(val handle: COpaquePointer) {
   fun launchApplicationWithIdentifier(identifier: String, suspend: Boolean = false) {
@@ -37,12 +37,7 @@ class SpringBoardServices(val handle: COpaquePointer) {
     return function(code).toKString()
   }
 
-  fun getStatusBarOperatorName(): String {
-    val function: SBCopyStatusBarOperatorName = symbol("SBSCopyStatusBarOperatorName")
-    return function().toKString()
-  }
-
-  fun getFrontmostApplicationIdentifier(): String {
+  fun getFrontmostApplicationIdentifier(): String? {
     val function: SBCopyFrontmostApplicationDisplayIdentifier = symbol("SBSCopyFrontmostApplicationDisplayIdentifier")
     return function().toKString()
   }

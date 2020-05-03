@@ -1,3 +1,6 @@
+package puma.cmd
+
+import help
 import kotlinx.cinterop.reinterpret
 import platform.Foundation.NSData
 import platform.Foundation.NSError

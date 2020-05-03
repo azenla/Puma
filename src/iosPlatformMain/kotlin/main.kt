@@ -1,4 +1,8 @@
 import kotlin.system.exitProcess
+import puma.cmd.impactHeavy
+import puma.cmd.launchApplication
+import puma.cmd.showDeviceInfo
+import puma.cmd.urlSessionGet
 import puma.util.vibrate
 
 fun help(): Nothing {
@@ -8,6 +12,7 @@ fun help(): Nothing {
     Commands:
       urlsession-get <url>: Fetch content of a URL
       launch <application>: Launch an Application by Identifier
+      active-application: Print Active Application
       device-info: Show Device Information
       vibrate: Play Vibration Alert
       impact: Play Impact Feedback at Heavy Level
@@ -25,7 +30,7 @@ fun main(args: Array<String>) {
     "launch" -> launchApplication(args.drop(1))
     "vibrate" -> vibrate()
     "device-info" -> showDeviceInfo()
-    "impact" -> impact()
+    "impact" -> impactHeavy()
 
     else -> {
       println("Unknown Command.")

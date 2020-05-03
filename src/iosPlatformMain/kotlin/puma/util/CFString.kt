@@ -15,3 +15,6 @@ fun String.asCFStringRef(): CFStringRef = CFStringCreateWithCString(
 
 fun CFStringRef.toKString(): String =
   CFStringGetCStringPtr(this, kCFStringEncodingUTF8)!!.toKStringFromUtf8()
+
+fun CFStringRef?.toKString(): String? =
+  CFStringGetCStringPtr(this, kCFStringEncodingUTF8)?.toKStringFromUtf8()

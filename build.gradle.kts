@@ -102,7 +102,6 @@ fun setupDeployAndExecute(systemTarget: String) {
 
     executable = "/usr/bin/puma.kexe"
   }
-
 }
 
 setupDeployAndExecute("IosArm32")
