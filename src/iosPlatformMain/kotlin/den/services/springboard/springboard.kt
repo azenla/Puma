@@ -16,7 +16,6 @@ import platform.CoreFoundation.TRUE
 private typealias SBLaunchApplicationWithIdentifier = CPointer<CFunction<(CFStringRef, Int) -> Int>>
 private typealias SBLaunchingErrorString = CPointer<CFunction<(Int) -> CFStringRef>>
 private typealias SBCopyFrontmostApplicationDisplayIdentifier = CPointer<CFunction<() -> CFStringRef?>>
-private typealias SBCopyStatusBarOperatorName = CPointer<CFunction<() -> CFStringRef?>>
 
 class SpringBoardServices(handle: COpaquePointer) : PrivateLibrary(handle) {
   fun launchApplicationWithIdentifier(identifier: String, suspend: Boolean = false) {
