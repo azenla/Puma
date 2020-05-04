@@ -1,6 +1,6 @@
 package den.services.springboard
 
-import den.core.asCFStringRef
+import den.core.toCFStringRef
 import den.core.toKString
 import den.services.PrivateLibrary
 import den.services.PrivateLibraryLoader
@@ -21,7 +21,7 @@ class SpringBoardServices(handle: COpaquePointer) : PrivateLibrary(handle) {
   fun launchApplicationWithIdentifier(identifier: String, suspend: Boolean = false) {
     val function: SBLaunchApplicationWithIdentifier =
       symbol("SBSLaunchApplicationWithIdentifier")
-    val identifierRef = identifier.asCFStringRef()
+    val identifierRef = identifier.toCFStringRef()
     val result = function(identifierRef, if (suspend) TRUE else FALSE)
 
     if (result != 0) {

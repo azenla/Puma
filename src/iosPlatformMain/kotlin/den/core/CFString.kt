@@ -7,7 +7,7 @@ import platform.CoreFoundation.CFStringRef
 import platform.CoreFoundation.kCFAllocatorDefault
 import platform.CoreFoundation.kCFStringEncodingUTF8
 
-fun String.asCFStringRef(): CFStringRef = CFStringCreateWithCString(
+fun String.toCFStringRef(): CFStringRef = CFStringCreateWithCString(
   kCFAllocatorDefault,
   this,
   kCFStringEncodingUTF8
