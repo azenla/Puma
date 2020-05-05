@@ -7,6 +7,7 @@ import den.crypto.Sha512Hash
 import den.device.ImpactGenerator
 import den.services.backboard.BackboardServices
 import den.services.mobilegestalt.MobileGestalt
+import den.services.mobilegestalt.calculateObfuscatedKey
 import den.services.mobilegestalt.mobileGestaltDatabase
 import den.services.use
 import kotlin.system.exitProcess
@@ -78,7 +79,7 @@ fun main(args: Array<String>) {
         if (value != null) {
           allKeyValues[mappedKey] = value
           if (!isJsonMode) {
-            println("$mappedKey: $value")
+            println("$mappedKey := $value")
           }
         }
       }
@@ -91,6 +92,17 @@ fun main(args: Array<String>) {
           String.serializer(),
           String.serializer()
         ), allKeyValues))
+      }
+    }
+
+    "gestalt-validate-db" -> mobileGestaltDatabase.forEach { entry ->
+      if (entry.value != null) {
+        val value = entry.value!!
+        val obfuscated = calculateObfuscatedKey(value)
+
+        if (entry.key != obfuscated) {
+          println("Expected $value to obfuscate to ${entry.key} but it obfuscated to $obfuscated")
+        }
       }
     }
 

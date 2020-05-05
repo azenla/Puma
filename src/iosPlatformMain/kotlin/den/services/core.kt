@@ -13,12 +13,7 @@ abstract class PrivateLibrary(val handle: COpaquePointer) {
   protected inline fun <reified T : CPointed> symbol(name: String): CPointer<T> =
     dlsym(handle, name)!!.reinterpret<T>()
 
-  fun close() {
-    val code = dlclose(handle)
-    if (code != 0) {
-      throw RuntimeException("Failed to close service.")
-    }
-  }
+  fun close() = dlclose(handle)
 }
 
 abstract class PrivateLibraryLoader<T : PrivateLibrary>(val path: String) {
