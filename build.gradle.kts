@@ -92,7 +92,7 @@ fun setupDeployAndExecute(systemTarget: String) {
     from(tasks.getByName("linkDebugExecutable$systemTarget"))
 
     entitlements = "resources/puma.entitlements"
-    target = "/usr/bin/puma.kexe"
+    target = "/usr/bin/puma"
     sign = true
   }
 }
