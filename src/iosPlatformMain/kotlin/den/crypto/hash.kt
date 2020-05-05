@@ -1,10 +1,12 @@
 package den.crypto
 
 import kotlinx.cinterop.CPointed
+import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.CValuesRef
 import kotlinx.cinterop.UByteVar
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.convert
+import kotlinx.cinterop.pin
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.usePinned
 import platform.CoreCrypto.CC_LONG
@@ -13,6 +15,8 @@ import platform.CoreCrypto.CC_SHA1_DIGEST_LENGTH
 typealias CCHashInitFunc<T> = (CValuesRef<T>) -> Int
 typealias CCHashUpdateFunc<T> = (CValuesRef<T>, CValuesRef<*>, CC_LONG) -> Int
 typealias CCHashFinalFunc<T> = (CValuesRef<UByteVar>, CValuesRef<T>) -> Int
+
+typealias CCHashDigestFunc = (CValuesRef<*>, CC_LONG, CValuesRef<UByteVar>) -> CPointer<UByteVar>?
 
 @Suppress("EXPERIMENTAL_API_USAGE")
 abstract class Hash<T : CPointed>(
@@ -28,10 +32,19 @@ abstract class Hash<T : CPointed>(
     checkHashCall(init.invoke(context.ptr))
   }
 
-  fun update(data: ByteArray) {
+  fun update(data: ByteArray, offset: Int, length: Int) {
     data.usePinned { pin ->
-      checkHashCall(update.invoke(context.ptr, pin.addressOf(0), data.size.convert()))
+      checkHashCall(update.invoke(context.ptr, pin.addressOf(offset), length.convert()))
     }
+  }
+
+  fun update(data: ByteArray) = update(data, 0, data.size)
+
+  fun digest(data: ByteArray) = digest(data, 0, data.size)
+
+  fun digest(data: ByteArray, offset: Int, length: Int): ByteArray {
+    update(data, offset, length)
+    return digest()
   }
 
   fun digest(): ByteArray {
@@ -46,5 +59,27 @@ abstract class Hash<T : CPointed>(
     if (code != 1) {
       throw RuntimeException("CommonCrypto call failed.")
     }
+  }
+}
+
+@Suppress("EXPERIMENTAL_API_USAGE")
+abstract class HashCompanion(private val digest: CCHashDigestFunc) {
+  fun digest(data: ByteArray): ByteArray {
+    val dataPin = data.pin()
+
+    val messageDigest: UByteArray = UByteArray(CC_SHA1_DIGEST_LENGTH)
+    val messageDigestPin = messageDigest.pin()
+
+    try {
+      digest.invoke(
+        dataPin.addressOf(0),
+        dataPin.get().size.convert(),
+        messageDigestPin.addressOf(0)
+      ) ?: throw RuntimeException("Failed to digest input data.")
+    } finally {
+      messageDigestPin.unpin()
+      dataPin.unpin()
+    }
+    return messageDigest.toByteArray()
   }
 }

@@ -1,8 +1,17 @@
-import den.core.hex
 import den.crypto.Sha1Hash
+import den.device.ImpactGenerator
+import den.services.backboard.BackboardServices
+import den.services.mobilegestalt.MobileGestalt
+import den.services.mobilegestalt.mobileGestaltDatabase
+import den.services.use
 import kotlin.system.exitProcess
-import platform.posix.EOF
-import platform.posix.getchar
+import kotlinx.cinterop.toKString
+import kotlinx.serialization.builtins.MapSerializer
+import kotlinx.serialization.builtins.serializer
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
+import platform.posix.getenv
+import puma.cmd.hashAndPrint
 import puma.cmd.launchApplication
 import puma.cmd.showDeviceInfo
 import puma.cmd.urlSessionGet
@@ -18,6 +27,7 @@ fun help(): Nothing {
       device-info: Show Device Information
       vibrate: Play Vibration Alert
       hash-sha1: Read from stdin and SHA1 hash the content
+      gestalt-print-all: Read Valid Mobile Gestalt Values
   """.trimIndent())
   exitProcess(1)
 }
@@ -27,23 +37,44 @@ fun main(args: Array<String>) {
     help()
   }
 
+  val isJsonMode = (getenv("PUMA_OUTPUT_JSON")?.toKString() ?: "false").toBoolean()
+
   when (args[0]) {
     "urlsession-get" -> urlSessionGet(args.drop(1))
     "launch" -> launchApplication(args.drop(1))
     "vibrate" -> vibrate()
     "device-info" -> showDeviceInfo()
-    "hash-sha1" -> {
-      val content: MutableList<Byte> = mutableListOf()
-      while (true) {
-        val c = getchar()
-        if (c == EOF) {
-          break
+    "set-backlight-level" -> BackboardServices.open().use {
+      setBacklightLevel(args[1].toFloat())
+    }
+
+    "hash-sha1" -> hashAndPrint(Sha1Hash())
+
+    // Broken without UI mainScreen.
+    "impact" -> ImpactGenerator().impact()
+
+    "gestalt-print-all" -> MobileGestalt.open().use {
+      val allKeyValues = mutableMapOf<String, String>()
+      mobileGestaltDatabase.entries.sortedBy { it.value ?: it.key }.forEach { entry ->
+        val value = read(entry.key)
+        val mappedKey = entry.value ?: entry.key
+        if (value != null) {
+          allKeyValues[mappedKey] = value
+          if (!isJsonMode) {
+            println("$mappedKey: $value")
+          }
         }
-        content.add(c.toByte())
       }
-      val hash = Sha1Hash()
-      hash.update(content.toByteArray())
-      println(hash.digest().hex())
+
+      if (isJsonMode) {
+        println(Json(JsonConfiguration.Stable.copy(
+          prettyPrint = true,
+          indent = "  "
+        )).stringify(MapSerializer(
+          String.serializer(),
+          String.serializer()
+        ), allKeyValues))
+      }
     }
 
     else -> {
