@@ -49,98 +49,106 @@ import platform.CoreCrypto.CC_SHA512_Final
 import platform.CoreCrypto.CC_SHA512_Init
 import platform.CoreCrypto.CC_SHA512_Update
 
-class Md2Hash : Hash<CC_MD2_CTX>(
+class Md2Hash : HashContext<CC_MD2_CTX>(
   context = nativeHeap.alloc(),
   init = { ctx -> CC_MD2_Init(ctx) },
   update = { ctx, data, length -> CC_MD2_Update(ctx, data, length) },
   final = { digest, ctx -> CC_MD2_Final(digest, ctx) },
   sizeOfDigest = CC_MD2_DIGEST_LENGTH
 ) {
-  companion object : HashCompanion(
+  companion object : HashAlgorithm(
+    sizeOfDigest = CC_MD2_DIGEST_LENGTH,
     digest = { data, length, digest -> CC_MD2(data, length, digest) }
   )
 }
 
-class Md4Hash : Hash<CC_MD4_CTX>(
+class Md4Hash : HashContext<CC_MD4_CTX>(
   context = nativeHeap.alloc(),
   init = { ctx -> CC_MD4_Init(ctx) },
   update = { ctx, data, length -> CC_MD4_Update(ctx, data, length) },
   final = { digest, ctx -> CC_MD4_Final(digest, ctx) },
   sizeOfDigest = CC_MD4_DIGEST_LENGTH
 ) {
-  companion object : HashCompanion(
+  companion object : HashAlgorithm(
+    sizeOfDigest = CC_MD4_DIGEST_LENGTH,
     digest = { data, length, digest -> CC_MD4(data, length, digest) }
   )
 }
 
-class Md5Hash : Hash<CC_MD5_CTX>(
+class Md5Hash : HashContext<CC_MD5_CTX>(
   context = nativeHeap.alloc(),
   init = { ctx -> CC_MD5_Init(ctx) },
   update = { ctx, data, length -> CC_MD5_Update(ctx, data, length) },
   final = { digest, ctx -> CC_MD5_Final(digest, ctx) },
   sizeOfDigest = CC_MD5_DIGEST_LENGTH
 ) {
-  companion object : HashCompanion(
+  companion object : HashAlgorithm(
+    sizeOfDigest = CC_MD5_DIGEST_LENGTH,
     digest = { data, length, digest -> CC_MD5(data, length, digest) }
   )
 }
 
-class Sha1Hash : Hash<CC_SHA1_CTX>(
+class Sha1Hash : HashContext<CC_SHA1_CTX>(
   context = nativeHeap.alloc(),
   init = { ctx -> CC_SHA1_Init(ctx) },
   update = { ctx, data, length -> CC_SHA1_Update(ctx, data, length) },
   final = { digest, ctx -> CC_SHA1_Final(digest, ctx) },
   sizeOfDigest = CC_SHA1_DIGEST_LENGTH
 ) {
-  companion object : HashCompanion(
+  companion object : HashAlgorithm(
+    sizeOfDigest = CC_SHA1_DIGEST_LENGTH,
     digest = { data, length, digest -> CC_SHA1(data, length, digest) }
   )
 }
 
-class Sha224Hash : Hash<CC_SHA256_CTX>(
+class Sha224Hash : HashContext<CC_SHA256_CTX>(
   context = nativeHeap.alloc(),
   init = { ctx -> CC_SHA224_Init(ctx) },
   update = { ctx, data, length -> CC_SHA224_Update(ctx, data, length) },
   final = { digest, ctx -> CC_SHA224_Final(digest, ctx) },
   sizeOfDigest = CC_SHA224_DIGEST_LENGTH
 ) {
-  companion object : HashCompanion(
+  companion object : HashAlgorithm(
+    sizeOfDigest = CC_SHA224_DIGEST_LENGTH,
     digest = { data, length, digest -> CC_SHA224(data, length, digest) }
   )
 }
 
-class Sha256Hash : Hash<CC_SHA256_CTX>(
+class Sha256Hash : HashContext<CC_SHA256_CTX>(
   context = nativeHeap.alloc(),
   init = { ctx -> CC_SHA256_Init(ctx) },
   update = { ctx, data, length -> CC_SHA256_Update(ctx, data, length) },
   final = { digest, ctx -> CC_SHA256_Final(digest, ctx) },
   sizeOfDigest = CC_SHA256_DIGEST_LENGTH
 ) {
-  companion object : HashCompanion(
+  companion object : HashAlgorithm(
+    sizeOfDigest = CC_SHA256_DIGEST_LENGTH,
     digest = { data, length, digest -> CC_SHA256(data, length, digest) }
   )
 }
 
-class Sha384Hash : Hash<CC_SHA512_CTX>(
+class Sha384Hash : HashContext<CC_SHA512_CTX>(
   context = nativeHeap.alloc(),
   init = { ctx -> CC_SHA384_Init(ctx) },
   update = { ctx, data, length -> CC_SHA384_Update(ctx, data, length) },
   final = { digest, ctx -> CC_SHA384_Final(digest, ctx) },
   sizeOfDigest = CC_SHA384_DIGEST_LENGTH
 ) {
-  companion object : HashCompanion(
+  companion object : HashAlgorithm(
+    sizeOfDigest = CC_SHA384_DIGEST_LENGTH,
     digest = { data, length, digest -> CC_SHA384(data, length, digest) }
   )
 }
 
-class Sha512Hash : Hash<CC_SHA512_CTX>(
+class Sha512Hash : HashContext<CC_SHA512_CTX>(
   context = nativeHeap.alloc(),
   init = { ctx -> CC_SHA512_Init(ctx) },
   update = { ctx, data, length -> CC_SHA512_Update(ctx, data, length) },
   final = { digest, ctx -> CC_SHA512_Final(digest, ctx) },
   sizeOfDigest = CC_SHA512_DIGEST_LENGTH
 ) {
-  companion object : HashCompanion(
+  companion object : HashAlgorithm(
+    sizeOfDigest = CC_SHA512_DIGEST_LENGTH,
     digest = { data, length, digest -> CC_SHA512(data, length, digest) }
   )
 }

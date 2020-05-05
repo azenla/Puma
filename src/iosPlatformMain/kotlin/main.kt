@@ -1,4 +1,9 @@
+import den.crypto.Md5Hash
 import den.crypto.Sha1Hash
+import den.crypto.Sha224Hash
+import den.crypto.Sha256Hash
+import den.crypto.Sha384Hash
+import den.crypto.Sha512Hash
 import den.device.ImpactGenerator
 import den.services.backboard.BackboardServices
 import den.services.mobilegestalt.MobileGestalt
@@ -26,7 +31,14 @@ fun help(): Nothing {
       launch <application>: Launch an Application by Identifier
       device-info: Show Device Information
       vibrate: Play Vibration Alert
+
+      hash-md5: Read from stdin and MD5 hash the content
       hash-sha1: Read from stdin and SHA1 hash the content
+      hash-sha224: Read from stdin and SHA224 hash the content
+      hash-sha256: Read from stdin and SHA256 hash the content
+      hash-sha384: Read from stdin and SHA384 hash the content
+      hash-sha512: Read from stdin and SHA512 hash the content
+
       gestalt-print-all: Read Valid Mobile Gestalt Values
   """.trimIndent())
   exitProcess(1)
@@ -48,7 +60,12 @@ fun main(args: Array<String>) {
       setBacklightLevel(args[1].toFloat())
     }
 
-    "hash-sha1" -> hashAndPrint(Sha1Hash())
+    "hash-md5" -> hashAndPrint(Md5Hash)
+    "hash-sha1" -> hashAndPrint(Sha1Hash)
+    "hash-sha224" -> hashAndPrint(Sha224Hash)
+    "hash-sha256" -> hashAndPrint(Sha256Hash)
+    "hash-sha384" -> hashAndPrint(Sha384Hash)
+    "hash-sha512" -> hashAndPrint(Sha512Hash)
 
     // Broken without UI mainScreen.
     "impact" -> ImpactGenerator().impact()

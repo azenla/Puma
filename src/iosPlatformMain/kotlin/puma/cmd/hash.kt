@@ -1,11 +1,11 @@
 package puma.cmd
 
 import den.core.hex
-import den.crypto.Hash
+import den.crypto.HashAlgorithm
 import platform.posix.EOF
 import platform.posix.getchar
 
-fun hashAndPrint(hash: Hash<*>) {
+fun hashAndPrint(hash: HashAlgorithm) {
   val content: MutableList<Byte> = mutableListOf()
   while (true) {
     val c = getchar()
@@ -14,6 +14,6 @@ fun hashAndPrint(hash: Hash<*>) {
     }
     content.add(c.toByte())
   }
-  hash.update(content.toByteArray())
-  println(hash.digest().hex())
+  val bytes = hash.digest(content.toByteArray())
+  println(bytes.hex())
 }

@@ -6,7 +6,6 @@ import kotlinx.cinterop.CValuesRef
 import kotlinx.cinterop.UByteVar
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.convert
-import kotlinx.cinterop.pin
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.usePinned
 import platform.CoreCrypto.CC_LONG
@@ -19,7 +18,7 @@ typealias CCHashFinalFunc<T> = (CValuesRef<UByteVar>, CValuesRef<T>) -> Int
 typealias CCHashDigestFunc = (CValuesRef<*>, CC_LONG, CValuesRef<UByteVar>) -> CPointer<UByteVar>?
 
 @Suppress("EXPERIMENTAL_API_USAGE")
-abstract class Hash<T : CPointed>(
+abstract class HashContext<T : CPointed>(
   private val context: T,
   init: CCHashInitFunc<T>,
   private val update: CCHashUpdateFunc<T>,
@@ -63,23 +62,21 @@ abstract class Hash<T : CPointed>(
 }
 
 @Suppress("EXPERIMENTAL_API_USAGE")
-abstract class HashCompanion(private val digest: CCHashDigestFunc) {
+abstract class HashAlgorithm(val sizeOfDigest: Int, private val digest: CCHashDigestFunc) {
   fun digest(data: ByteArray): ByteArray {
-    val dataPin = data.pin()
+    val dataSize = data.size
+    val messageDigest = UByteArray(sizeOfDigest)
 
-    val messageDigest: UByteArray = UByteArray(CC_SHA1_DIGEST_LENGTH)
-    val messageDigestPin = messageDigest.pin()
-
-    try {
-      digest.invoke(
-        dataPin.addressOf(0),
-        dataPin.get().size.convert(),
-        messageDigestPin.addressOf(0)
-      ) ?: throw RuntimeException("Failed to digest input data.")
-    } finally {
-      messageDigestPin.unpin()
-      dataPin.unpin()
+    data.usePinned { dataPin ->
+      messageDigest.usePinned { messageDigestPin ->
+        digest.invoke(
+          dataPin.addressOf(0),
+          dataSize.convert(),
+          messageDigestPin.addressOf(0)
+        ) ?: throw RuntimeException("Failed to digest input data.")
+      }
     }
+
     return messageDigest.toByteArray()
   }
 }
