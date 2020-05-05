@@ -9,6 +9,7 @@ import den.services.backboard.BackboardServices
 import den.services.mobilegestalt.MobileGestalt
 import den.services.mobilegestalt.calculateObfuscatedKey
 import den.services.mobilegestalt.mobileGestaltDatabase
+import den.services.springboard.SpringBoardServices
 import den.services.use
 import kotlin.system.exitProcess
 import kotlinx.cinterop.toKString
@@ -55,6 +56,8 @@ fun main(args: Array<String>) {
   when (args[0]) {
     "urlsession-get" -> urlSessionGet(args.drop(1))
     "launch" -> launchApplication(args.drop(1))
+    "launch-siri" -> SpringBoardServices.open().use { launchAssistant() }
+    "lock-device" -> SpringBoardServices.open().use { lockDevice() }
     "vibrate" -> vibrate()
     "device-info" -> showDeviceInfo()
     "set-backlight-level" -> BackboardServices.open().use {

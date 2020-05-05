@@ -12,6 +12,7 @@ import kotlinx.cinterop.invoke
 import platform.CoreFoundation.CFStringRef
 import platform.CoreFoundation.FALSE
 import platform.CoreFoundation.TRUE
+import platform.posix.sleep
 
 private typealias SBLaunchApplicationWithIdentifier = CPointer<CFunction<(CFStringRef, Int) -> Int>>
 private typealias SBLaunchingErrorString = CPointer<CFunction<(Int) -> CFStringRef>>
@@ -35,6 +36,23 @@ class SpringBoardServices(handle: COpaquePointer) : PrivateLibrary(handle) {
     val function: SBLaunchingErrorString =
       symbol("SBSApplicationLaunchingErrorString")
     return function(code).toKString()
+  }
+
+  fun getBlockableServerPort(): COpaquePointer {
+    val function: CPointer<CFunction<() -> COpaquePointer>> = symbol("SBSSpringBoardBlockableServerPort")
+    return function()
+  }
+
+  fun launchAssistant() {
+    val function: CPointer<CFunction<() -> Unit>> = symbol("SBSActivateAssistant")
+    function()
+    sleep(1u)
+  }
+
+  fun lockDevice() {
+    val function: CPointer<CFunction<(COpaquePointer) -> Unit>> = symbol("SBLockDevice")
+    function(getBlockableServerPort())
+    sleep(1u)
   }
 
   fun getFrontmostApplicationIdentifier(): String? {

@@ -43,12 +43,14 @@ fun showDeviceInfo() {
   println("Battery Level: ${(device.batteryLevel * 100).toInt()}%")
 
   val libc = dlopen("libc.dylib", RTLD_GLOBAL)
-  val function: CPointer<CFunction<() -> size_t>> =
-    dlsym(libc, "os_proc_available_memory")!!.reinterpret()
-  val memory = function()
-  @Suppress("EXPERIMENTAL_API_USAGE")
-  println("Available Memory: ${abs(memory.toInt()) / 1024 / 1024}MB")
-  dlclose(libc)
+  val function: CPointer<CFunction<() -> size_t>>? =
+    dlsym(libc, "os_proc_available_memory")?.reinterpret()
+  if (function != null) {
+    val memory = function()
+    @Suppress("EXPERIMENTAL_API_USAGE")
+    println("Available Memory: ${abs(memory.toInt()) / 1024 / 1024}MB")
+    dlclose(libc)
+  }
 
   SpringBoardServices.open().use {
     val frontmost = getFrontmostApplicationIdentifier()
